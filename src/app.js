@@ -1,66 +1,97 @@
-import express from 'express' // importa o framework Express
+import express from 'express'
 
-const app =  express()
+const app = express()
 
-// Express deve interpretar o corpo (body) como JSON
 app.use(express.json())
 
-// Mock
-const alunos = [
-        {id: 1, nome: 'Bruno', curso: 'ADS'},
-        {id: 2, nome: 'Maria', curso: 'ADS'},
-        {id: 3, nome: 'Lara', curso: 'ADS'},
-        {id: 4, nome: 'José', curso: 'ADS'}
+const lista = [
+  { id: 1, nome: 'Matheus', curso: 'ADS' },
+  { id: 2, nome: 'Aquiles', curso: 'ADS' },
+  { id: 3, nome: 'Carlos', curso: 'SI' },
+  { id: 4, nome: 'Maria', curso: 'ADS' }
 ]
 
-// Função auxiliar
-function buscarAlunoPorId(id) {
-    return alunos.filter( aluno => aluno.id == id ) // retorna o registro(aluno). Vai comparar o id do item aluno (da lista) com o id passado
+function buscarIndexPorId(id) {
+  return lista.findIndex((item) => item.id === id)
 }
 
-function buscarIndexAluno(id) {
-    return alunos.findIndex( aluno => aluno.id == id ) // retorna o index
-}
-
-// Criando a rota raiz
-app.get('/', (req, res) => {  // request = requisição do cliente e response = resposta enviada pelo servidor
-    res.send('Minha API REST com Express') // resposta do servidor
+// Rota raiz
+app.get('/', (req, res) => {
+  res.status(200).json({
+    mensagem: 'API REST funcionando'
+  })
 })
 
-// Rota lista alunos - GET
-app.get('/alunos', (req,res) => {
-    res.status(200).send(alunos); // 200: A solicitação foi bem-sucedida.
+// CREATE
+app.post('/lista', (req, res) => {
+  const novoAluno = req.body
+
+  lista.push(novoAluno)
+
+  res.status(201).json(novoAluno)
 })
 
-// Rota lista alunos - POST (adiciona um novo aluno na lista)
-app.post('/alunos', (req,res) => {
-    alunos.push(req.body)
-    res.status(201).send('Aluno cadastrado com sucesso!'); // 201: A requisição foi bem sucedida e um novo recurso foi criado como resultado.
+// READ
+app.get('/lista', (req, res) => {
+  res.status(200).json(lista)
 })
 
-// Delete
-app.delete('/alunos/:id', (req,res) => {
-    let index = buscarIndexAluno(req.params.id) 
-    alunos.splice(index, 1) // 2º parametro indica a quantidade de itens a serem removidos
-    res.send(`Aluno com id ${req.params.id} excluido com sucesso`)
+// READ BY ID
+app.get('/lista/:id', (req, res) => {
+  const id = Number(req.params.id)
+
+  const aluno = lista.find((item) => item.id === id)
+
+  if (!aluno) {
+    return res.status(404).json({
+      mensagem: 'Aluno não encontrado'
+    })
+  }
+
+  res.status(200).json(aluno)
 })
 
-// Buscar aluno por id
-app.get('/alunos/:id', (req,res) => {
-    let index = buscarAlunoPorId(req.params.id) 
-    res.send(index)
+// UPDATE
+app.put('/lista/:id', (req, res) => {
+  const id = Number(req.params.id)
+
+  const index = buscarIndexPorId(id)
+
+  if (index === -1) {
+    return res.status(404).json({
+      mensagem: 'Aluno não encontrado'
+    })
+  }
+
+  const alunoAtualizado = {
+    id,
+    nome: req.body.nome,
+    curso: req.body.curso
+  }
+
+  lista[index] = alunoAtualizado
+
+  res.status(200).json(alunoAtualizado)
 })
 
-// Update
-app.put('/alunos/:id', (req,res) => {
-    let index = buscarIndexAluno(req.params.id) 
-    alunos[index].nome = req.body.nome
-    alunos[index].curso = req.body.curso
-    res.send(alunos)
+// DELETE
+app.delete('/lista/:id', (req, res) => {
+  const id = Number(req.params.id)
+
+  const index = buscarIndexPorId(id)
+
+  if (index === -1) {
+    return res.status(404).json({
+      mensagem: 'Aluno não encontrado'
+    })
+  }
+
+  const alunoRemovido = lista.splice(index, 1)
+
+  res.status(200).json({
+    mensagem: 'Aluno removido com sucesso',
+    aluno: alunoRemovido[0]
+  })
 })
 
-export default app; //preciso exportar para usar em outros módulos
-
-
-
-
+export default app
