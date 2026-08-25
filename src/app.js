@@ -1,4 +1,5 @@
 import express from 'express'
+import alunosRoutes from './routes/alunos.routes.js'
 
 const app = express()
 
@@ -9,5 +10,7 @@ app.get('/', (req, res) => {
     mensagem: 'API REST funcionando'
   })
 })
+
+app.use('/alunos', alunosRoutes)
 
 export default app
