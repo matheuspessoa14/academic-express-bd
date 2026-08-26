@@ -10,16 +10,16 @@ Este projeto consiste no desenvolvimento de uma API REST para gerenciamento de a
 
 A aplicação permite realizar operações de:
 
-- cadastro;
-- consulta;
-- atualização;
-- exclusão de alunos.
+* cadastro;
+* consulta;
+* atualização;
+* exclusão de alunos.
 
-Nesta etapa do projeto, o CRUD foi integrado definitivamente ao banco de dados **MySQL 8.4**, substituindo o armazenamento em memória utilizado nas etapas iniciais.
+O CRUD utiliza persistência real no banco de dados **MySQL 8.4**, substituindo o armazenamento em memória utilizado nas etapas iniciais do projeto.
 
 A aplicação utiliza o pacote `mysql2` para comunicação com o banco de dados e um **Connection Pool** para gerenciamento das conexões.
 
-A arquitetura também foi organizada em diferentes camadas:
+A arquitetura da aplicação foi organizada em diferentes camadas:
 
 ```text
 Requisição HTTP
@@ -28,12 +28,16 @@ Requisição HTTP
       ↓
   Controller
       ↓
+   Service
+      ↓
   Repository
       ↓
     MySQL
 ```
 
-Essa separação permite organizar melhor as responsabilidades da aplicação e facilita sua manutenção e evolução.
+A camada Service foi adicionada como uma etapa extra do projeto para demonstrar a separação das **regras de negócio** da aplicação.
+
+Nesta etapa, foi implementada uma regra de negócio simples para validação dos dados de alunos antes que sejam enviados ao Repository e persistidos no banco de dados.
 
 O projeto é desenvolvido para fins acadêmicos na Unidade Curricular de **Programação Web 2 — Senac RJ**.
 
@@ -43,43 +47,46 @@ O projeto é desenvolvido para fins acadêmicos na Unidade Curricular de **Progr
 
 Atualmente, a API possui as seguintes funcionalidades:
 
-- Listagem de alunos;
-- Consulta de aluno por ID;
-- Cadastro de alunos;
-- Atualização de alunos;
-- Exclusão de alunos;
-- Recebimento de dados em formato JSON;
-- Utilização de códigos de status HTTP;
-- Utilização de rotas separadas;
-- Utilização de Controllers;
-- Utilização de Repository;
-- Persistência dos dados no MySQL;
-- Utilização do pacote `mysql2`;
-- Utilização de Connection Pool;
-- Configuração de variáveis de ambiente;
-- Execução do MySQL utilizando Docker Compose;
-- Persistência do banco através de Docker Volume;
-- Utilização de consultas SQL parametrizadas;
-- Geração automática de ID através do `AUTO_INCREMENT`;
-- Tratamento de aluno não encontrado com HTTP `404`;
-- Utilização de HTTP `201` para criação de recursos;
-- Utilização de HTTP `204` para exclusão sem conteúdo;
-- Header `Location` na criação de novos alunos;
-- Execução em ambiente de desenvolvimento utilizando Node Watch.
+* Listagem de alunos;
+* Consulta de aluno por ID;
+* Cadastro de alunos;
+* Atualização de alunos;
+* Exclusão de alunos;
+* Recebimento de dados em formato JSON;
+* Utilização de códigos de status HTTP;
+* Utilização de rotas separadas;
+* Utilização de Controllers;
+* Utilização de Services;
+* Utilização de Repository;
+* Persistência dos dados no MySQL;
+* Utilização do pacote `mysql2`;
+* Utilização de Connection Pool;
+* Configuração de variáveis de ambiente;
+* Execução do MySQL utilizando Docker Compose;
+* Persistência do banco através de Docker Volume;
+* Utilização de consultas SQL parametrizadas;
+* Geração automática de ID através do `AUTO_INCREMENT`;
+* Tratamento de aluno não encontrado com HTTP `404`;
+* Utilização de HTTP `201` para criação de recursos;
+* Utilização de HTTP `204` para exclusão sem conteúdo;
+* Header `Location` na criação de novos alunos;
+* Validação de dados através da camada Service;
+* Regra de negócio para impedir dados inválidos de alunos;
+* Execução em ambiente de desenvolvimento utilizando Node Watch.
 
 ---
 
 ## 3. Tecnologias Utilizadas
 
-- Node.js
-- Express
-- JavaScript
-- MySQL 8.4
-- mysql2
-- Docker
-- Docker Compose
-- Git
-- GitHub
+* Node.js
+* Express
+* JavaScript
+* MySQL 8.4
+* mysql2
+* Docker
+* Docker Compose
+* Git
+* GitHub
 
 ---
 
@@ -103,6 +110,9 @@ api-rest-express/
 │   ├── routes/
 │   │   └── alunos.routes.js
 │   │
+│   ├── services/
+│   │   └── AlunoService.js
+│   │
 │   ├── app.js
 │   └── server.js
 │
@@ -117,19 +127,20 @@ api-rest-express/
 
 ### Principais arquivos
 
-- `src/app.js` — configuração da aplicação Express, middlewares e registro das rotas;
-- `src/server.js` — responsável pela inicialização do servidor;
-- `src/database/pool.js` — configuração do Connection Pool utilizado para comunicação com o MySQL;
-- `src/controllers/AlunoController.js` — responsável pela interação HTTP e coordenação das operações de alunos;
-- `src/repositories/AlunoRepository.js` — responsável pelas consultas SQL e persistência dos alunos no MySQL;
-- `src/routes/alunos.routes.js` — definição das rotas e métodos HTTP relacionados aos alunos;
-- `.env` — variáveis de ambiente utilizadas localmente pela aplicação;
-- `.env.example` — modelo das variáveis de ambiente, sem informações sensíveis;
-- `.gitignore` — arquivos e diretórios que não devem ser versionados;
-- `docker-compose.yml` — configuração do container MySQL e do volume utilizado para persistência;
-- `package.json` — informações do projeto, scripts e dependências;
-- `package-lock.json` — registro das versões das dependências instaladas;
-- `README.md` — documentação do projeto.
+* `src/app.js` — configuração da aplicação Express, middlewares e registro das rotas;
+* `src/server.js` — responsável pela inicialização do servidor;
+* `src/database/pool.js` — configuração do Connection Pool utilizado para comunicação com o MySQL;
+* `src/controllers/AlunoController.js` — responsável pela interação HTTP e coordenação das operações de alunos;
+* `src/services/AlunoService.js` — responsável pelas regras de negócio e validações relacionadas aos alunos;
+* `src/repositories/AlunoRepository.js` — responsável pelas consultas SQL e persistência dos alunos no MySQL;
+* `src/routes/alunos.routes.js` — definição das rotas e métodos HTTP relacionados aos alunos;
+* `.env` — variáveis de ambiente utilizadas localmente pela aplicação;
+* `.env.example` — modelo das variáveis de ambiente, sem informações sensíveis;
+* `.gitignore` — arquivos e diretórios que não devem ser versionados;
+* `docker-compose.yml` — configuração do container MySQL e do volume utilizado para persistência;
+* `package.json` — informações do projeto, scripts e dependências;
+* `package-lock.json` — registro das versões das dependências instaladas;
+* `README.md` — documentação do projeto.
 
 A aplicação utiliza **ES Modules**, através da configuração:
 
@@ -148,7 +159,7 @@ export
 
 ## 5. Responsabilidade das Camadas
 
-A aplicação utiliza uma arquitetura dividida em três camadas principais.
+A aplicação utiliza uma arquitetura dividida em quatro camadas principais.
 
 ### Routes
 
@@ -176,18 +187,54 @@ O Controller é responsável pela interação com HTTP.
 
 Ele trabalha com:
 
-```javascript
+```text
 req
 res
 ```
 
 Suas responsabilidades incluem:
 
-- receber parâmetros da requisição;
-- receber dados do `req.body`;
-- chamar o Repository;
-- definir o status HTTP;
-- retornar a resposta ao cliente.
+* receber parâmetros da requisição;
+* receber dados do `req.body`;
+* chamar o Service;
+* definir o status HTTP;
+* retornar a resposta ao cliente.
+
+O Controller não deve concentrar regras de negócio ou consultas SQL.
+
+---
+
+### Service
+
+O Service é responsável pelas **regras de negócio** da aplicação.
+
+Nesta etapa, foi adicionada a classe:
+
+```text
+AlunoService
+```
+
+Ela atua entre o Controller e o Repository.
+
+Fluxo:
+
+```text
+Controller
+    ↓
+Service
+    ↓
+Repository
+```
+
+A Service realiza validações antes de permitir que os dados sejam persistidos.
+
+Exemplo de regra implementada:
+
+```text
+nome e curso são obrigatórios
+```
+
+Caso os dados não estejam de acordo com a regra definida, a Service interrompe o fluxo e retorna um erro para o Controller.
 
 ---
 
@@ -206,9 +253,9 @@ DELETE
 
 O Repository conhece:
 
-- MySQL;
-- SQL;
-- Connection Pool.
+* MySQL;
+* SQL;
+* Connection Pool.
 
 O Repository **não conhece**:
 
@@ -223,7 +270,7 @@ Dessa forma, a responsabilidade de HTTP permanece no Controller.
 
 ## 6. Fluxo da Aplicação
 
-O fluxo de uma requisição é:
+O fluxo completo de uma requisição é:
 
 ```text
 Cliente
@@ -234,6 +281,8 @@ Route
    ↓
 Controller
    ↓
+Service
+   ↓
 Repository
    ↓
 Connection Pool
@@ -241,6 +290,8 @@ Connection Pool
 MySQL
    ↓
 Repository
+   ↓
+Service
    ↓
 Controller
    ↓
@@ -250,52 +301,106 @@ HTTP Response
 Exemplo:
 
 ```text
-GET /alunos/1
+POST /alunos
       ↓
 alunos.routes.js
       ↓
-AlunoController.show()
+AlunoController.store()
       ↓
-AlunoRepository.findById()
+AlunoService.create()
       ↓
-SELECT ... FROM alunos WHERE id = ?
+Validação dos dados
+      ↓
+AlunoRepository.create()
+      ↓
+INSERT
       ↓
 MySQL
       ↓
 Aluno
       ↓
-HTTP 200
+HTTP 201
 ```
 
 ---
 
-## 7. Pré-requisitos
+## 7. Regra de Negócio — AlunoService
 
-Antes de executar o projeto, é necessário possuir:
+A camada Service foi adicionada como um exercício extra para demonstrar uma regra de negócio real.
 
-- Node.js;
-- npm;
-- Git;
-- Docker;
-- Docker Compose.
+A principal regra implementada nesta etapa é:
+
+```text
+nome e curso são obrigatórios.
+```
+
+Antes de cadastrar ou atualizar um aluno, a Service verifica os dados recebidos.
+
+Exemplo de dados válidos:
+
+```json
+{
+  "nome": "Matheus",
+  "curso": "ADS"
+}
+```
+
+Exemplo de dados inválidos:
+
+```json
+{
+  "nome": "",
+  "curso": ""
+}
+```
+
+Nesse caso, a Service interrompe o fluxo e informa que os campos são obrigatórios.
+
+A validação acontece antes da chamada ao Repository:
+
+```text
+Controller
+    ↓
+Service
+    ↓
+Validação
+    ↓
+Repository
+    ↓
+MySQL
+```
+
+Dessa forma, a regra de negócio não fica dentro da Route ou do Repository.
 
 ---
 
-## 8. Instalação
+## 8. Pré-requisitos
 
-### 8.1 Clone o repositório
+Antes de executar o projeto, é necessário possuir:
+
+* Node.js;
+* npm;
+* Git;
+* Docker;
+* Docker Compose.
+
+---
+
+## 9. Instalação
+
+### 9.1 Clone o repositório
 
 ```bash
 git clone https://github.com/matheuspessoa14/academic-express-bd.git
 ```
 
-### 8.2 Acesse a pasta do projeto
+### 9.2 Acesse a pasta do projeto
 
 ```bash
 cd academic-express-bd
 ```
 
-### 8.3 Instale as dependências
+### 9.3 Instale as dependências
 
 ```bash
 npm install
@@ -303,7 +408,7 @@ npm install
 
 ---
 
-## 9. Configuração das Variáveis de Ambiente
+## 10. Configuração das Variáveis de Ambiente
 
 A aplicação utiliza um arquivo `.env` para armazenar as configurações do ambiente.
 
@@ -329,7 +434,7 @@ O arquivo `.env` não deve ser enviado ao repositório Git, pois pode conter inf
 
 O projeto utiliza um `.gitignore` contendo:
 
-```gitignore
+```text
 node_modules/
 .env
 ```
@@ -350,9 +455,9 @@ Em aplicações reais, informações como senhas, tokens, chaves de API e creden
 
 ---
 
-## 10. Execução do Projeto
+## 11. Execução do Projeto
 
-### 10.1 Banco de dados com Docker
+### 11.1 Banco de dados com Docker
 
 Antes de iniciar a aplicação, certifique-se de que o Docker Desktop está em execução.
 
@@ -393,7 +498,7 @@ api123
 
 ---
 
-### 10.2 Ambiente de desenvolvimento
+### 11.2 Ambiente de desenvolvimento
 
 Para iniciar a aplicação:
 
@@ -403,7 +508,7 @@ npm run dev
 
 O script utilizado é:
 
-```text
+```bash
 node --watch --env-file=.env src/server.js
 ```
 
@@ -422,7 +527,7 @@ http://localhost:3000
 
 ---
 
-### 10.3 Ambiente de produção
+### 11.3 Ambiente de produção
 
 Para iniciar a aplicação sem o modo de desenvolvimento:
 
@@ -432,13 +537,13 @@ npm start
 
 O script utilizado é:
 
-```text
+```bash
 node --env-file=.env src/server.js
 ```
 
 ---
 
-### 10.4 Parando o ambiente Docker
+### 11.4 Parando o ambiente Docker
 
 Para parar e remover o container e a rede:
 
@@ -458,7 +563,7 @@ Esse segundo comando remove os dados armazenados no volume.
 
 ---
 
-## 11. Conexão com o MySQL
+## 12. Conexão com o MySQL
 
 A comunicação entre a API e o banco de dados é realizada utilizando o pacote:
 
@@ -509,7 +614,7 @@ O Pool permite que a aplicação reutilize conexões com o banco de dados, evita
 
 ---
 
-## 12. Repository e Consultas SQL
+## 13. Repository e Consultas SQL
 
 O `AlunoRepository` concentra as operações de persistência dos alunos.
 
@@ -603,7 +708,7 @@ para verificar se algum registro foi removido.
 
 ---
 
-## 13. Consultas SQL Parametrizadas
+## 14. Consultas SQL Parametrizadas
 
 As consultas utilizam parâmetros:
 
@@ -638,24 +743,24 @@ Os valores externos são enviados separadamente da instrução SQL.
 
 ---
 
-## 14. Endpoints da API
+## 15. Endpoints da API
 
-| Método | Endpoint | Descrição |
-|---|---|---|
-| GET | `/` | Retorna uma mensagem da API |
-| GET | `/alunos` | Lista todos os alunos |
-| GET | `/alunos/:id` | Consulta um aluno pelo ID |
-| POST | `/alunos` | Cadastra um novo aluno |
-| PUT | `/alunos/:id` | Atualiza um aluno |
-| DELETE | `/alunos/:id` | Exclui um aluno |
+| Método | Endpoint      | Descrição                   |
+| ------ | ------------- | --------------------------- |
+| GET    | `/`           | Retorna uma mensagem da API |
+| GET    | `/alunos`     | Lista todos os alunos       |
+| GET    | `/alunos/:id` | Consulta um aluno pelo ID   |
+| POST   | `/alunos`     | Cadastra um novo aluno      |
+| PUT    | `/alunos/:id` | Atualiza um aluno           |
+| DELETE | `/alunos/:id` | Exclui um aluno             |
 
 ---
 
-## 15. Exemplos de Requisição e Resposta
+## 16. Exemplos de Requisição e Resposta
 
 Os endpoints podem ser testados utilizando o **Postman**, Insomnia ou outras ferramentas de requisição HTTP.
 
-### 15.1 Verificar a API
+### 16.1 Verificar a API
 
 ```http
 GET /
@@ -677,7 +782,7 @@ Status:
 
 ---
 
-### 15.2 Listar alunos
+### 16.2 Listar alunos
 
 ```http
 GET /alunos
@@ -708,7 +813,7 @@ Status:
 
 ---
 
-### 15.3 Consultar aluno por ID
+### 16.3 Consultar aluno por ID
 
 ```http
 GET /alunos/1
@@ -752,7 +857,7 @@ Status:
 
 ---
 
-### 15.4 Cadastrar aluno
+### 16.4 Cadastrar aluno
 
 ```http
 POST /alunos
@@ -760,7 +865,7 @@ POST /alunos
 
 Header:
 
-```text
+```http
 Content-Type: application/json
 ```
 
@@ -793,7 +898,7 @@ Status:
 
 A resposta também possui um header:
 
-```text
+```http
 Location: /alunos/5
 ```
 
@@ -801,7 +906,7 @@ indicando o endereço do recurso criado.
 
 ---
 
-### 15.5 Atualizar aluno
+### 16.5 Atualizar aluno
 
 ```http
 PUT /alunos/5
@@ -840,7 +945,7 @@ Caso o aluno não exista:
 
 ---
 
-### 15.6 Excluir aluno
+### 16.6 Excluir aluno
 
 ```http
 DELETE /alunos/5
@@ -870,7 +975,44 @@ Status:
 
 ---
 
-## 16. Autenticação
+### 16.7 Validação da regra de negócio
+
+A Service também valida os dados enviados no cadastro e na atualização.
+
+Exemplo inválido:
+
+```http
+POST /alunos
+```
+
+Body:
+
+```json
+{
+  "nome": "",
+  "curso": ""
+}
+```
+
+A Service identifica que os campos obrigatórios não foram preenchidos e interrompe o fluxo antes de chegar ao Repository.
+
+Exemplo de resposta:
+
+```json
+{
+  "mensagem": "Nome e curso são obrigatórios"
+}
+```
+
+Status:
+
+```text
+400 Bad Request
+```
+
+---
+
+## 17. Autenticação
 
 A aplicação **não possui sistema de autenticação de usuários nesta etapa do projeto**.
 
@@ -886,11 +1028,29 @@ configurado no MySQL é utilizado para controle de acesso da aplicação ao banc
 
 ---
 
-## 17. Tratamento de Erros
+## 18. Tratamento de Erros
 
 Nesta etapa, ainda não foi implementado um sistema de tratamento de erros centralizado.
 
 Entretanto, alguns cenários já possuem tratamento específico.
+
+### Dados inválidos
+
+Quando os dados enviados não atendem à regra de negócio:
+
+```text
+400 Bad Request
+```
+
+Exemplo:
+
+```json
+{
+  "mensagem": "Nome e curso são obrigatórios"
+}
+```
+
+---
 
 ### Aluno não encontrado
 
@@ -938,18 +1098,18 @@ e o Controller decide que a resposta HTTP apropriada é:
 
 ### Principais códigos HTTP utilizados
 
-- `200` — requisição realizada com sucesso;
-- `201` — recurso criado com sucesso;
-- `204` — operação realizada sem conteúdo na resposta;
-- `400` — requisição inválida;
-- `404` — recurso não encontrado;
-- `500` — erro interno do servidor.
+* `200` — requisição realizada com sucesso;
+* `201` — recurso criado com sucesso;
+* `204` — operação realizada sem conteúdo na resposta;
+* `400` — dados enviados não atendem às regras de negócio;
+* `404` — recurso não encontrado;
+* `500` — erro interno do servidor.
 
 O tratamento centralizado de erros será aprimorado em etapas posteriores.
 
 ---
 
-## 18. Testes
+## 19. Testes
 
 O projeto ainda não possui testes automatizados implementados.
 
@@ -957,14 +1117,15 @@ Os endpoints foram testados utilizando ferramentas de requisição HTTP, princip
 
 Os testes realizados incluem:
 
-- criação de alunos;
-- listagem de alunos;
-- consulta por ID;
-- atualização de alunos;
-- exclusão de alunos;
-- consulta de ID inexistente;
-- verificação dos códigos HTTP;
-- persistência dos dados após reinicialização da aplicação.
+* criação de alunos;
+* listagem de alunos;
+* consulta por ID;
+* atualização de alunos;
+* exclusão de alunos;
+* consulta de ID inexistente;
+* validação de dados;
+* verificação dos códigos HTTP;
+* persistência dos dados após reinicialização da aplicação.
 
 Também foram realizadas verificações diretamente no MySQL utilizando consultas como:
 
@@ -974,7 +1135,7 @@ SELECT * FROM alunos;
 
 ---
 
-## 19. Persistência dos Dados
+## 20. Persistência dos Dados
 
 Diferentemente das primeiras etapas do projeto, os dados dos alunos agora são armazenados diretamente no MySQL.
 
@@ -985,6 +1146,10 @@ Exemplo:
 ```text
 POST /alunos
       ↓
+Service
+      ↓
+Repository
+      ↓
 INSERT
       ↓
 MySQL
@@ -994,6 +1159,10 @@ Depois de reiniciar o servidor:
 
 ```text
 GET /alunos
+      ↓
+Service
+      ↓
+Repository
       ↓
 SELECT
       ↓
@@ -1006,7 +1175,7 @@ A persistência é garantida pelo banco de dados e pelo Docker Volume.
 
 ---
 
-## 20. Modelo de Dados
+## 21. Modelo de Dados
 
 A principal entidade utilizada pelo projeto é:
 
@@ -1030,47 +1199,54 @@ CREATE TABLE alunos (
 
 O campo `id`:
 
-- funciona como chave primária;
-- possui incremento automático.
+* funciona como chave primária;
+* possui incremento automático.
 
 Os campos `nome` e `curso`:
 
-- são obrigatórios;
-- possuem limite de 100 caracteres.
+* são obrigatórios;
+* possuem limite de 100 caracteres.
 
 ---
 
-## 21. Regras de Negócio
+## 22. Regras de Negócio
 
-Nesta etapa, o projeto possui regras de negócio simplificadas.
+Nesta etapa extra, foi adicionada uma camada Service para concentrar regras de negócio.
 
-As principais operações realizadas sobre alunos são:
-
-- cadastrar um aluno;
-- consultar todos os alunos;
-- consultar um aluno por ID;
-- atualizar os dados de um aluno;
-- excluir um aluno.
-
-O projeto ainda possui poucas regras de negócio, por isso não foi adicionada uma camada Service.
-
-A arquitetura atual é:
+A principal regra implementada é:
 
 ```text
-Route
-  ↓
+Nome e curso são obrigatórios.
+```
+
+Essa validação ocorre antes das operações de:
+
+```text
+CREATE
+UPDATE
+```
+
+Fluxo:
+
+```text
 Controller
-  ↓
-Repository
-  ↓
+    ↓
+AlunoService
+    ↓
+Validação
+    ↓
+AlunoRepository
+    ↓
 MySQL
 ```
 
-Uma camada Service poderá ser adicionada futuramente caso surjam regras de negócio mais complexas.
+Isso evita que dados inválidos sejam enviados diretamente ao banco.
+
+A criação da Service também permite que futuras regras de negócio sejam adicionadas sem sobrecarregar o Controller ou o Repository.
 
 ---
 
-## 22. Por que não utilizar uma camada Service?
+## 23. Por que utilizar uma camada Service?
 
 Em aplicações maiores é comum encontrar:
 
@@ -1084,25 +1260,11 @@ Service
 Repository
 ```
 
-A camada Service é responsável por regras de negócio.
+A camada Service concentra regras de negócio.
 
-Porém, neste momento o CRUD possui regras simples.
+Nesta etapa extra, a Service foi adicionada para demonstrar esse conceito na prática.
 
-Adicionar uma Service apenas para repassar chamadas como:
-
-```javascript
-service.findAll()
-```
-
-para:
-
-```javascript
-repository.findAll()
-```
-
-criaria uma camada sem responsabilidade real.
-
-Por isso, a arquitetura atual utiliza:
+Antes:
 
 ```text
 Route
@@ -1110,23 +1272,41 @@ Route
 Controller
   ↓
 Repository
+  ↓
+MySQL
 ```
+
+Depois:
+
+```text
+Route
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Repository
+  ↓
+MySQL
+```
+
+A principal vantagem é separar a regra de negócio da comunicação HTTP e da persistência.
 
 ---
 
-## 23. Extras — Programação Web 2
+## 24. Extras — Programação Web 2
 
-### 23.1 Docker
+### 24.1 Docker
 
 Foi adicionada ao projeto uma configuração utilizando **Docker Compose** para execução de um banco de dados MySQL 8.4.
 
 O ambiente utiliza:
 
-- container MySQL;
-- banco de dados `api_rest`;
-- usuário específico para a aplicação;
-- exposição da porta `3306`;
-- Docker Volume para persistência dos dados.
+* container MySQL;
+* banco de dados `api_rest`;
+* usuário específico para a aplicação;
+* exposição da porta `3306`;
+* Docker Volume para persistência dos dados.
 
 Configuração utilizada:
 
@@ -1157,7 +1337,7 @@ volumes:
 
 ---
 
-### 23.2 Docker Volume
+### 24.2 Docker Volume
 
 O volume:
 
@@ -1185,7 +1365,7 @@ remove também os volumes associados ao projeto e, consequentemente, os dados pe
 
 ---
 
-### 23.3 ES Modules
+### 24.3 ES Modules
 
 O projeto utiliza ES Modules através da configuração:
 
@@ -1202,7 +1382,7 @@ export
 
 ---
 
-### 23.4 Node Watch
+### 24.4 Node Watch
 
 O projeto utiliza o recurso `watch` do Node.js para reiniciar automaticamente a aplicação durante o desenvolvimento.
 
@@ -1216,7 +1396,7 @@ Dessa forma, alterações nos arquivos monitorados provocam automaticamente a re
 
 ---
 
-### 23.5 Connection Pool
+### 24.5 Connection Pool
 
 O acesso ao banco utiliza um Connection Pool fornecido pelo `mysql2`.
 
@@ -1224,7 +1404,7 @@ O Pool permite o gerenciamento e reutilização de conexões com o MySQL, sendo 
 
 ---
 
-### 23.6 SQL Parametrizado
+### 24.6 SQL Parametrizado
 
 As consultas SQL utilizam parâmetros para receber valores externos.
 
@@ -1241,7 +1421,26 @@ Essa abordagem evita inserir diretamente valores recebidos do usuário dentro da
 
 ---
 
-## 24. Exercícios do Tutorial
+### 24.7 Service
+
+Como atividade extra, foi adicionada a camada Service para concentrar regras de negócio.
+
+Arquivo:
+
+```text
+src/services/AlunoService.js
+```
+
+Responsabilidades:
+
+* validar dados;
+* aplicar regras de negócio;
+* chamar o Repository;
+* evitar que regras de negócio fiquem diretamente no Controller.
+
+---
+
+## 25. Exercícios do Tutorial
 
 Durante o tutorial foram trabalhados os seguintes exercícios:
 
@@ -1333,95 +1532,36 @@ WHERE id = ?
 
 ---
 
-## 25. Versionamento e Organização das Branches
+## 26. Branch Extra — Service
 
-O desenvolvimento das atividades segue o padrão de versionamento definido para a Unidade Curricular de Programação Web 2.
-
-Cada atividade possui uma branch no formato:
+Como atividade adicional proposta durante a aula, foi criada uma branch específica:
 
 ```text
-branch_yyyymmdd
+branch_20260825_extra
 ```
 
-As branches utilizadas até o momento são:
+Essa branch foi criada a partir da `main` para implementar uma alteração adicional no projeto.
+
+A atividade teve como objetivo:
+
+* pesquisar a utilização da camada Service;
+* adicionar uma nova camada à arquitetura;
+* implementar uma regra de negócio;
+* demonstrar a separação entre Controller, regras de negócio e Repository.
+
+A arquitetura passou de:
 
 ```text
-branch_20260818
+Route
+  ↓
+Controller
+  ↓
+Repository
+  ↓
+MySQL
 ```
 
-Responsável pela etapa inicial de:
-
-- Docker;
-- MySQL;
-- Docker Volume;
-- configuração inicial do banco.
-
-E:
-
-```text
-branch_20260825
-```
-
-Responsável pelas etapas de:
-
-- `mysql2`;
-- variáveis de ambiente;
-- Connection Pool;
-- conexão Node.js → MySQL;
-- CRUD com MySQL;
-- Routes;
-- Controllers;
-- Repository;
-- organização da aplicação em camadas.
-
-As branches são criadas a partir da `main`.
-
-Fluxo utilizado:
-
-```text
-main
- │
- ├── branch_20260818
- │       │
- │       ├── Docker + MySQL
- │       ├── Docker Volume
- │       └── configuração inicial
- │
- └── branch_20260825
-         │
-         ├── mysql2
-         ├── .env
-         ├── Connection Pool
-         ├── CRUD no MySQL
-         ├── Routes
-         ├── Controllers
-         └── Repository
-```
-
-Após a conclusão e validação das atividades, as branches semanais poderão ser integradas à `main`.
-
-Os commits devem possuir mensagens claras e representar alterações relevantes realizadas durante o desenvolvimento.
-
----
-
-## 26. Próximas Etapas
-
-O CRUD principal já está funcionando utilizando persistência real no MySQL.
-
-As próximas etapas poderão incluir:
-
-- validação dos dados recebidos;
-- validação de parâmetros;
-- middleware;
-- tratamento centralizado de erros;
-- rota 404;
-- respostas mais consistentes;
-- encerramento adequado do Connection Pool;
-- possíveis regras de negócio;
-- documentação com Swagger/OpenAPI;
-- testes automatizados.
-
-A arquitetura poderá evoluir para:
+para:
 
 ```text
 Route
@@ -1435,11 +1575,138 @@ Repository
 MySQL
 ```
 
-caso o projeto passe a possuir regras de negócio que justifiquem a criação da camada Service.
+A regra de negócio adicionada foi a validação de que:
+
+```text
+nome e curso são obrigatórios.
+```
 
 ---
 
-## 27. Autor
+## 27. Versionamento e Organização das Branches
+
+O desenvolvimento das atividades segue o padrão de versionamento definido para a Unidade Curricular de Programação Web 2.
+
+As branches utilizadas até o momento são:
+
+```text
+branch_20260818
+branch_20260821
+branch_20260825
+branch_20260825_extra
+```
+
+### branch_20260818
+
+Responsável pela etapa inicial de:
+
+* Docker;
+* MySQL;
+* Docker Volume;
+* configuração inicial do banco.
+
+### branch_20260821
+
+Responsável pelas etapas relacionadas à configuração da conexão com o banco de dados.
+
+### branch_20260825
+
+Responsável pelas etapas de:
+
+* `mysql2`;
+* variáveis de ambiente;
+* Connection Pool;
+* conexão Node.js → MySQL;
+* CRUD no MySQL;
+* Routes;
+* Controllers;
+* Repository;
+* organização da aplicação em camadas.
+
+### branch_20260825_extra
+
+Responsável pela atividade adicional proposta em aula:
+
+* inclusão da camada Service;
+* aplicação de regra de negócio;
+* validação dos dados dos alunos;
+* evolução da arquitetura da aplicação.
+
+Fluxo geral:
+
+```text
+main
+ │
+ ├── branch_20260818
+ │       │
+ │       ├── Docker + MySQL
+ │       ├── Docker Volume
+ │       └── configuração inicial
+ │
+ ├── branch_20260821
+ │       │
+ │       └── configuração do banco
+ │
+ ├── branch_20260825
+ │       │
+ │       ├── mysql2
+ │       ├── .env
+ │       ├── Connection Pool
+ │       ├── CRUD no MySQL
+ │       ├── Routes
+ │       ├── Controllers
+ │       └── Repository
+ │
+ └── branch_20260825_extra
+         │
+         ├── Service
+         └── Regra de negócio
+```
+
+Após a conclusão e validação das atividades, as branches poderão ser integradas à `main`.
+
+Os commits devem possuir mensagens claras e representar alterações relevantes realizadas durante o desenvolvimento.
+
+---
+
+## 28. Próximas Etapas
+
+O CRUD principal já está funcionando utilizando persistência real no MySQL.
+
+A arquitetura também possui uma camada Service para regras de negócio.
+
+As próximas etapas poderão incluir:
+
+* validação mais completa dos dados recebidos;
+* validação de parâmetros;
+* middleware;
+* tratamento centralizado de erros;
+* rota 404;
+* respostas mais consistentes;
+* encerramento adequado do Connection Pool;
+* documentação com Swagger/OpenAPI;
+* testes automatizados;
+* novas regras de negócio.
+
+A arquitetura atual permite evoluir para:
+
+```text
+Route
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Repository
+  ↓
+MySQL
+```
+
+sem concentrar todas as responsabilidades em um único arquivo.
+
+---
+
+## 29. Autor
 
 **Nome:** Matheus Pessoa Telles de Oliveira
 
@@ -1451,7 +1718,7 @@ caso o projeto passe a possuir regras de negócio que justifiquem a criação da
 
 ---
 
-## 28. Licença e Uso Acadêmico
+## 30. Licença e Uso Acadêmico
 
 Projeto desenvolvido para fins acadêmicos na Unidade Curricular de **Programação Web 2 — Senac RJ**.
 
