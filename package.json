@@ -1,18 +1,19 @@
 {
   "name": "api-rest",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "API RESTful desenvolvida para a Unidade Curricular de Programação Web 2",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "nodemon --exec \"node --env-file=.env server.js\"",
+    "start": "node --env-file=.env server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Matheus Pessoa Telles",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mysql2": "^3.24.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
